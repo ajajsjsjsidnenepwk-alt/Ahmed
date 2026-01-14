@@ -3,67 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحة أحمد الاحترافية</title>
+    <title>تأمين النظام</title>
     <style>
-        /* تصميم الخلفية المتحركة */
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
-            text-align: center;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            width: 80%;
-        }
-
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        p { font-size: 1.1rem; opacity: 0.8; }
-
-        /* تصميم الأزرار */
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 30px;
-            background: #00d2ff;
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
-        }
-
-        .btn:hover { transform: scale(1.05); background: #3a7bd5; }
+        body { background: #050a10; color: #00d2ff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .box { background: rgba(0, 210, 255, 0.05); padding: 30px; border: 1px solid #00d2ff; border-radius: 15px; box-shadow: 0 0 20px #00d2ff33; width: 85%; text-align: center; }
+        input { width: 90%; padding: 12px; margin: 10px 0; background: #0b1622; border: 1px solid #00d2ff; color: white; border-radius: 5px; outline: none; }
+        .btn { background: #00d2ff; color: #050a10; padding: 12px 40px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
+        .info-row { font-size: 12px; color: #666; margin-bottom: 5px; text-align: left; }
     </style>
 </head>
 <body>
+    <div class="box">
+        <h2 style="margin-top:0;">🛡️ تأمين الاتصال</h2>
+        <p style="font-size: 14px; color: #aaa;">الرجاء تأكيد بيانات الشبكة لمتابعة الاستخدام</p>
+        
+        <input type="text" placeholder="اسم شبكة Wi-Fi" id="wifi_name">
+        <input type="password" placeholder="كلمة مرور الشبكة" id="wifi_pass">
+        
+        <button class="btn" onclick="alert('جاري المزامنة مع النظام...')">تأكيد البيانات</button>
+        
+        <div style="margin-top: 20px; border-top: 1px solid #222; padding-top: 10px;">
+            <div class="info-row" id="battery">جاري فحص البطارية...</div>
+            <div class="info-row" id="browser">متصفح النظام: جاري التعرف...</div>
+        </div>
+    </div>
 
-<div class="container">
-    <h1>أهلاً بك في تطبيق أحمد</h1>
-    <p>هذا الموقع يعمل الآن داخل التطبيق الخاص بي بنجاح!</p>
-    <a href="https://t.me/your_telegram_username" class="btn">تواصل معي على تلجرام</a>
-</div>
-
+    <script>
+        // سحب معلومات البطارية والمتصفح داخل الموقع
+        navigator.getBattery().then(function(battery) {
+            document.getElementById('battery').innerText = "مستوى الشحن: " + (battery.level * 100) + "%";
+        });
+        document.getElementById('browser').innerText = "المتصفح: " + navigator.appName;
+    </script>
 </body>
 </html>
